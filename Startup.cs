@@ -21,8 +21,8 @@ namespace Shop
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
-            services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("db_temp"));
+            //services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("db_temp"));Uso de bando em memória            
+            services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("connectionString")));
             services.AddScoped<DataContext, DataContext>();
         }
 
