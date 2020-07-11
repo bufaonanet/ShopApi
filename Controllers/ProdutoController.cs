@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Shop.Data;
 using Shop.Models;
 
-namespace Shop.Controller
+namespace Shop.Controllers
 {
     [Route("produtos")]
     public class ProdutoController : ControllerBase
