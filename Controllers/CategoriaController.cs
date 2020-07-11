@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shop.Data;
@@ -12,11 +13,15 @@ namespace Shop.Controllers
     //Endpoint = URL
     //hppts://localhost5001/categorias
 
-    [Route("categorias")]
+    [Route("v1/categorias")]
     public class CategoriaController : ControllerBase
     {
         [HttpGet]
         [Route("")]
+        [AllowAnonymous] //permite todos a acessarem o endpoint
+        [ResponseCache(VaryByHeader = "User-Agent", Location = ResponseCacheLocation.Any, Duration = 30)]
+        //para desligar o cache do endpoint quando usado o services.AddResponseCaching() na aplicação
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)] 
         public async Task<ActionResult<List<Categoria>>> Get(
             [FromServices] DataContext context
         )
@@ -27,6 +32,7 @@ namespace Shop.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Categoria>> GetById(
             int id,
             [FromServices] DataContext context)
@@ -38,6 +44,7 @@ namespace Shop.Controllers
 
         [HttpPost]
         [Route("")]
+        [Authorize(Roles = "admin")] //Só quem tem permissão admin no banco acessa
         public async Task<ActionResult<List<Categoria>>> Post(
             [FromBody] Categoria model,
             [FromServices] DataContext context)
@@ -63,6 +70,7 @@ namespace Shop.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<Categoria>>> Put(
             [FromBody] Categoria model,
             [FromServices] DataContext context,
@@ -95,6 +103,7 @@ namespace Shop.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<List<Categoria>>> Delete(
             int id,
             [FromServices] DataContext context

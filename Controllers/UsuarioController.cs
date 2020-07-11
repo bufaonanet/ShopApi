@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -10,12 +11,38 @@ using Shop.Services;
 
 namespace Shop.Controllers
 {
-    [Route("usuarios")]
+    [Route("v1/usuarios")]
     public class UsuarioController : Controller
     {
+        [HttpGet]
+        [Route("")]
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult<List<Usuario>>> Get([FromServices] DataContext context)
+        {
+            var usuarios = await context
+            .Usuarios
+            .AsNoTracking()
+            .ToListAsync();
+            return usuarios;
+        }
+
+        [HttpGet]
+        [Route("{id:int}")]
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult<Usuario>> Get(
+            [FromServices] DataContext context, int id)
+        {
+            var usuario = await context
+            .Usuarios
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id);
+            return usuario;
+        }
+
         [HttpPost]
         [Route("")]
         [AllowAnonymous]
+        //[Authorize(Roles = "admin")]
         public async Task<ActionResult<Usuario>> Post(
             [FromServices] DataContext context,
             [FromBody] Usuario model
@@ -29,13 +56,37 @@ namespace Shop.Controllers
                 await context.SaveChangesAsync();
                 return Ok(model);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return BadRequest(new
-                {
-                    message = "Não foi possível criar o usuário",
-                    error = e.Message
-                });
+                return BadRequest(new { message = "Não foi possível criar o usuário", });
+            }
+        }
+
+        [HttpPut]
+        [Route("{id:int}")]
+        //[Authorize(Roles = "admin")]
+        public async Task<ActionResult<Usuario>> Put(
+            [FromServices] DataContext context,
+            [FromBody] Usuario model,
+            int id)
+        {
+            //Verifica se os dados são válidos
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            //verifica se o id na rota é o mesmo do id do modelo
+            if (model.Id != id)
+                return NotFound(new { mensagem = "ususario não encontrado" });
+
+            try
+            {
+                context.Entry<Usuario>(model).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                return model;
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Não foi possível atualizar o ususario" });
             }
         }
 
@@ -64,26 +115,5 @@ namespace Shop.Controllers
                 token = token
             };
         }
-
-        [HttpGet]
-        [Route("anonimo")]
-        [AllowAnonymous]
-        public string Anonimo() => "Anonimo";
-
-        [HttpGet]
-        [Route("autenticado")]
-        [Authorize]
-        public string Autenticado() => "Autenticado";
-        
-        [HttpGet]
-        [Route("user")]
-        [Authorize(Roles = "user")]
-        public string AcessoUsuario() => "Usuario";
-
-        [HttpGet]
-        [Route("admin")]
-        [Authorize(Roles = "admin")]
-        public string AcessoAdmin() => "Administrador";
-
     }
 }
