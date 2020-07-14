@@ -14,12 +14,11 @@ namespace ShopApi.Controllers
         public async Task<ActionResult<dynamic>> Get(
             [FromServices] DataContext context)
         {
-            var admin = new Usuario { Id = 1, Login = "admin", Senha = "admin" };
-            var usuario = new Usuario { Id = 2, Login = "douglas", Senha = "douglas" };
-            var categoria = new Categoria { Id = 1, Titulo = "Informática" };
+            var admin = new Usuario { Login = "admin", Senha = "admin" };
+            var usuario = new Usuario { Login = "douglas", Senha = "douglas" };
+            var categoria = new Categoria { Titulo = "Informática" };
             var produto = new Produto
-            {
-                Id = 1,
+            {                
                 Titulo = "Mouse",
                 Preco = 150.99M,
                 Descricao = "mouse gamer",
