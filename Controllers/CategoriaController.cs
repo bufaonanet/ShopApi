@@ -11,7 +11,7 @@ namespace Shop.Controllers
 {
 
     //Endpoint = URL
-    //hppts://localhost5001/categorias
+    //https://localhost5001/categorias
 
     [Route("v1/categorias")]
     public class CategoriaController : ControllerBase
@@ -123,6 +123,6 @@ namespace Shop.Controllers
             {
                 return BadRequest(new { message = "Erro ao deletar categoria", error = e.Message });
             }
-        }
+        }       
     }
 }
