@@ -52,8 +52,14 @@ namespace Shop.Controllers
                 return BadRequest(ModelState);
             try
             {
+                //só faz inserção de usuários de nível user
+                model.NivelAcesso = "user";
+
                 context.Usuarios.Add(model);
                 await context.SaveChangesAsync();
+
+                //não retornar senha no model
+                model.Senha = "";
                 return Ok(model);
             }
             catch (Exception)
@@ -108,6 +114,9 @@ namespace Shop.Controllers
                 return NotFound(new { message = "Usuário não encontrado" });
 
             var token = TokenService.GerarToken(usuario);
+
+            //não retornar senha no model
+            usuario.Senha = "";
 
             return new
             {

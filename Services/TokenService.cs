@@ -17,7 +17,7 @@ namespace Shop.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, usuario.Id.ToString()),
+                    new Claim(ClaimTypes.Name, usuario.Login),
                     new Claim(ClaimTypes.Role, usuario.NivelAcesso )
                 }),
                 Expires = DateTime.UtcNow.AddHours(2),

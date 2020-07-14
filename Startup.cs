@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Shop.Data;
+using Microsoft.OpenApi.Models;
 
 namespace Shop
 {
@@ -24,6 +25,8 @@ namespace Shop
 
         public void ConfigureServices(IServiceCollection services)
         {
+            //Habilitar as solicitações entre origens
+            services.AddCors();
 
             //Para comprimir os jsons retornados 
             services.AddResponseCompression(options =>
@@ -31,7 +34,7 @@ namespace Shop
                 options.Providers.Add<GzipCompressionProvider>();
                 options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/json" });
             });
-            
+
             //services.AddResponseCaching(); faz caching na aplicação toda
 
             services.AddControllers();
@@ -54,9 +57,14 @@ namespace Shop
                 };
             });
 
-            //services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("db_temp"));Uso de bando em memória            
-            services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("connectionString")));
-            services.AddScoped<DataContext, DataContext>();
+            services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("db_temp")); //Uso de bando em memória            
+            //services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("connectionString")));
+            
+            //Adicionando o Swagger para documentar api
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Shop API", Version = "v1" });
+            });
         }
 
 
@@ -70,8 +78,21 @@ namespace Shop
             //Faz o app responder requisições com https
             app.UseHttpsRedirection();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Shop API V1");
+            });
+
             //Usar o padrão de rodas do Aspnet Core MVC
             app.UseRouting();
+
+
+            app.UseCors(x =>
+                x.AllowAnyOrigin()
+                 .AllowAnyMethod()
+                 .AllowAnyHeader()
+            );
 
             //Fazer uso de autenticação e autorização  
             app.UseAuthentication();
