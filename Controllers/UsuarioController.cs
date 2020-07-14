@@ -82,7 +82,7 @@ namespace Shop.Controllers
 
             //verifica se o id na rota é o mesmo do id do modelo
             if (model.Id != id)
-                return NotFound(new { mensagem = "ususario não encontrado" });
+                return NotFound(new { mensagem = "usuário não encontrado" });
 
             try
             {

@@ -57,8 +57,8 @@ namespace Shop
                 };
             });
 
-            services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("db_temp")); //Uso de bando em memória            
-            //services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("connectionString")));            
+            //services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("db_temp")); //Uso de bando em memória            
+            services.AddDbContext<DataContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("connectionString")));            
             
             //Adicionando o Swagger para documentar api
             services.AddSwaggerGen(c =>
